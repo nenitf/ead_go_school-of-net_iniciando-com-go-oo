@@ -9,6 +9,7 @@ import (
 
 Existem dois tipos de modificadores de acessos em structs:
 Exported ou unexported
+Exported: visivel para somente o mesmo pacote ou própria classe
 
 Igual as variaveis de pacote, isso é definido através da letra Maiuscula - exportavel - ou Minuscula - não exportavel
 
@@ -16,9 +17,9 @@ Igual as variaveis de pacote, isso é definido através da letra Maiuscula - exp
 
 // struct base
 type Car struct {
-	Name  string
-	Year  int
-	color string
+	Name  string `json:"teste"` // tag: altera o nome do campo
+	Year  int    `json:"-"`     // tag: omite para json
+	color string // unexported
 }
 
 type SuperCar struct {
@@ -31,21 +32,25 @@ func (c Car) info() string {
 }
 
 func main() {
+
+	car := Car{
+		"Corsa",
+		2002,
+		"azul",
+	}
 	sCar := SuperCar{
-		Car{
-			"Corsa",
-			2002,
-			"azul",
-		},
+		car,
 		true,
 	}
 
 	fmt.Println(sCar.Car.info()) // imprime a cor pois está sendo enviada de fora para dentro
 
-	// resultado com tabela asci
+	// resultado com tabela ascii
 	result, _ := json.Marshal(sCar)
 
 	// conversão asci em string
 	fmt.Println(string(result)) // não é possivel ver sCar.Car.color - letra minuscula
 
+	result2, _ := json.Marshal(car)
+	fmt.Println(string(result2))
 }
